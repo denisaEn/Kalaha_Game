@@ -3,6 +3,8 @@ import time
 import random
 import tkinter
 from tkinter import messagebox
+from MiniMax import *
+
 class Table:
    
    # column = [0, 1, 2, 3, 4, 5, 4, 3, 2, 1] 
@@ -87,7 +89,7 @@ class Table:
                         if (self.turn == 0):
                             stones = stones - 1
                             board[1][0].config(text=int(board[1][0]['text']) + 1)
-                            if stones == 0:
+                            if stones == 0 and self.is_end_match() == False:
                                 changingTurn = False
                 else:
                     while (column < total_columns - 2 and stones > 0):
@@ -108,24 +110,17 @@ class Table:
                         if self.turn == 2:
                             stones = stones - 1
                             board[1][total_columns - 1].config(text=int(board[1][total_columns - 1]['text']) + 1)
-                            if stones == 0:
+                            if stones == 0 and self.is_end_match() == False:
                                 changingTurn = False
 
             if (changingTurn == True):
-                    self.change_turn()
+                self.change_turn()
             return changingTurn
             
 
     def change_turn(self):
         total_columns = len(self.action_button[0])
-        if self.is_end_match() == True:
-            if (int(self.action_button[1][0]['text']) >  int(self.action_button[1][total_columns - 1]['text'])):
-                tkinter.messagebox.showinfo(title="Game over", message="Player 1 won!!")
-            elif (int(self.action_button[1][0]['text']) ==  int(self.action_button[1][total_columns - 1]['text'])):
-                tkinter.messagebox.showinfo(title="Game over", message="It's a draw!!")
-            else:
-                tkinter.messagebox.showinfo(title="Game over", message="Player 2 won!!")
-            self.new_game()
+        self.is_end_match()
         # change turn
         if self.turn == 2:
             self.turn = 0
@@ -138,13 +133,16 @@ class Table:
                 # AI player
                 print ("AI algorithm searches for the best move")
                 # best_move is the index of the first row between 1 and 6
-                # best_move = miniMax()
+                #best_move = MiniMax(self.action_button).best_move
+                print("Best move from MiniMax:")
+
                 # self.move(self.action_button, 0, best_move)
                 while True and self.is_end_match() == False:
-                    while True:
-                        best_move = random.randint(1,6)
-                        if int(self.action_button[0][best_move]['text']) != 0:
-                            break
+                    #while True:
+                    #    best_move = random.randint(1,6)
+                    #    if int(self.action_button[0][best_move]['text']) != 0:
+                    #        break
+                    best_move = MiniMax(self.action_button).best_move
                     print(best_move)
                     changingTurn = self.move(self.action_button, 0, best_move)
                     if changingTurn == True:
@@ -172,9 +170,15 @@ class Table:
         # choose the number of players
         if option == "1":
             self.nr_players = 1
+            for j in range(1, total_columns-1):
+                self.action_button[2][j].config(state= "normal")
+                self.action_button[0][j].config(state= "disabled")
             print ("Some code here...")
         else:
             self.nr_players = 2
+            for j in range(1, total_columns-1):
+                self.action_button[2][j].config(state= "normal")
+                self.action_button[0][j].config(state= "normal")
             print ("Some code here...")
     
     def new_game(self):
@@ -200,6 +204,7 @@ class Table:
 
     def is_end_match(self):
         total_columns = len(self.action_button[0])
+        is_end_game = False
         stones0 = 0
         stones2 = 0
         for j in range(1, total_columns-1):
@@ -210,11 +215,21 @@ class Table:
             self.action_button[1][total_columns - 1].config(text = (int(self.action_button[1][total_columns - 1]['text']) + stones2))
             for j in range(1, total_columns-1):
                 self.action_button[2][j].config(text=0)
-            return True
+            is_end_game = True
         elif (stones2 == 0):
             self.action_button[1][0].config(text = (int(self.action_button[1][0]['text']) + stones0))
             for j in range(1, total_columns-1):
                 self.action_button[0][j].config(text=0)
-            return True
+            is_end_game = True
         else:
-            return False
+            is_end_game = False
+        
+        if is_end_game == True:
+            if (int(self.action_button[1][0]['text']) >  int(self.action_button[1][total_columns - 1]['text'])):
+                tkinter.messagebox.showinfo(title="Game over", message="Player 1 won!!")
+            elif (int(self.action_button[1][0]['text']) ==  int(self.action_button[1][total_columns - 1]['text'])):
+                tkinter.messagebox.showinfo(title="Game over", message="It's a draw!!")
+            else:
+                tkinter.messagebox.showinfo(title="Game over", message="Player 2 won!!")
+            self.new_game()
+        return is_end_game
