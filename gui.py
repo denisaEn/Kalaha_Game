@@ -3,7 +3,7 @@ from tkinter import *
 from Table import *
 
 tk = Tk()
-tk.geometry('500x300')
+tk.geometry('700x300')
 t = Table(tk)
 
 tk.mainloop()

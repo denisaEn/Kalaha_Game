@@ -85,7 +85,7 @@ class Table:
                             self.action_button[row][column].config(text=newStones)
                     
                     if (column == total_columns - 2 and stones > 0): 
-                        newStones = int(self.action_button[1][5]['text']) + 1
+                        newStones = int(self.action_button[1][total_columns - 1]['text']) + 1
                         stones = stones - 1
                         self.action_button[1][total_columns - 1].config(text=newStones)
                         row = 0
@@ -159,18 +159,25 @@ class Table:
         stones2 = 0
         for j in range(1, total_columns-1):
             stones0 = stones0 + int(self.action_button[0][j]['text'])
-        for j in range(1, total_columns-1):
             stones2 = stones2 + int(self.action_button[2][j]['text'])
         
-        if(stones0 == 0 or stones2 == 0):
+        if (stones0 == 0):
+            self.action_button[1][total_columns - 1].config(text = (int(self.action_button[1][total_columns - 1]['text']) + stones2))
+            for j in range(1, total_columns-1):
+                self.action_button[2][j].config(text=0)
+            return True
+        elif (stones2 == 0):
+            self.action_button[1][0].config(text = (int(self.action_button[1][0]['text']) + stones0))
+            for j in range(1, total_columns-1):
+                self.action_button[0][j].config(text=0)
             return True
         else:
             return False
 
 # take the data
-lst = [(0, 4, 4 ,4, 4, 0),
-       (0, 0, 0, 0, 0, 0),
-       (0, 4, 4 ,4, 4, 0)]
+lst = [(0, 4, 4 ,4, 4, 4, 4, 0),
+       (0, 0, 0, 0, 0, 4, 4, 0),
+       (0, 4, 4 ,4, 4, 4, 4, 0)]
   
 # find total number of rows and
 # columns in list
