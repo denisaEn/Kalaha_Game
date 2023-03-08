@@ -63,14 +63,14 @@ class Table:
                         else:
                             self.action_button[row][column].config(text=newStones)
 
-                    if (column == 1  and stones > 0): 
-                        newStones = int(self.action_button[1][0]['text']) + 1
-                        stones = stones - 1
-                        self.action_button[1][0].config(text=newStones)
+                    if (column == 1  and stones > 0):
                         row = 2
-                        column = 0
-                        if stones == 0 and self.turn == 0:
-                            changingTurn = False
+                        column = 0 
+                        if (self.turn == 0):
+                            stones = stones - 1
+                            self.action_button[1][0].config(text=int(self.action_button[1][0]['text']) + 1)
+                            if stones == 0:
+                                changingTurn = False
                 else:
                     while (column < total_columns - 2 and stones > 0):
                         column = column + 1
@@ -84,14 +84,14 @@ class Table:
                         else:
                             self.action_button[row][column].config(text=newStones)
                     
-                    if (column == total_columns - 2 and stones > 0): 
-                        newStones = int(self.action_button[1][total_columns - 1]['text']) + 1
-                        stones = stones - 1
-                        self.action_button[1][total_columns - 1].config(text=newStones)
+                    if (column == total_columns - 2 and stones > 0):
                         row = 0
                         column = total_columns - 1
-                        if stones == 0 and self.turn == 2:
-                            changingTurn = False
+                        if self.turn == 2:
+                            stones = stones - 1
+                            self.action_button[1][total_columns - 1].config(text=int(self.action_button[1][total_columns - 1]['text']) + 1)
+                            if stones == 0:
+                                changingTurn = False
 
             if (changingTurn == True):
                     self.change_turn()
