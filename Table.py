@@ -55,7 +55,7 @@ class Table:
                         column = column - 1
                         newStones = int(self.action_button[row][column]['text']) + 1
                         stones = stones - 1
-                        if stones == 0 and self.turn == 0 and newStones == 1:
+                        if stones == 0 and self.turn == 0 and newStones == 1 and int(self.action_button[2][column]['text']) != 0:
                             self.action_button[row][column].config(text=0)
                             totalStones = int(self.action_button[1][0]['text']) + int(self.action_button[2][column]['text']) + 1
                             self.action_button[1][0].config(text=totalStones)
@@ -76,7 +76,7 @@ class Table:
                         column = column + 1
                         newStones = int(self.action_button[row][column]['text']) + 1
                         stones = stones - 1
-                        if stones == 0 and self.turn == 2 and newStones == 1:
+                        if stones == 0 and self.turn == 2 and newStones == 1 and int(self.action_button[0][column]['text']) != 0:
                             self.action_button[row][column].config(text=0)
                             totalStones = int(self.action_button[1][total_columns - 1]['text']) + int(self.action_button[0][column]['text']) + 1
                             self.action_button[1][total_columns - 1].config(text=totalStones)
@@ -101,7 +101,7 @@ class Table:
             if (int(self.action_button[1][0]['text']) >  int(self.action_button[1][total_columns - 1]['text'])):
                 tkinter.messagebox.showinfo(title="Game over", message="Player 1 won!!")
             elif (int(self.action_button[1][0]['text']) ==  int(self.action_button[1][total_columns - 1]['text'])):
-                tkinter.messagebox.showinfo(title="Game over", message="There is tie!!")
+                tkinter.messagebox.showinfo(title="Game over", message="It's a draw!!")
             else:
                 tkinter.messagebox.showinfo(title="Game over", message="Player 2 won!!")
             self.new_game()
