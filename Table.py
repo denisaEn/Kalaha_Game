@@ -4,6 +4,7 @@ import random
 import tkinter
 from tkinter import messagebox
 from MiniMax import *
+import tkinter.font as font
 
 class Table:
    
@@ -21,6 +22,8 @@ class Table:
 
     def create_board(self, root, number_of_Stones):
         # take the data
+        buttonFont = font.Font(size=15)
+        houseFont =  font.Font(size=30)
         board = [(0, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, 0),
                  (0, 0, 0, 0, 0, 0, 0, 0),
                  (0, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, 0)]
@@ -34,13 +37,13 @@ class Table:
         # house of the first player on the board
         self.e = Entry(self.frame, width=5, fg='blue', font=('Arial',16,'bold'))
         self.e.grid(row=1, column=0)
-        self.action_button[1][0] = tkinter.Button(self.frame, text=0, state= "disabled", bg = "#83a3ee", command= lambda x1=1, y1=0: self.move(self.action_button, x1, y1))
+        self.action_button[1][0] = tkinter.Button(self.frame, text=0, state= "disabled", bg = "#83a3ee", font=houseFont, command= lambda x1=1, y1=0: self.move(self.action_button, x1, y1))
         self.action_button[1][0].grid(row=1, column=0, sticky="ew")
         
         # house of the second player on the board
         self.e = Entry(self.frame, width=5, fg='blue', font=('Arial',16,'bold'))
         self.e.grid(row=1, column=total_columns - 1)
-        self.action_button[1][total_columns - 1] = tkinter.Button(self.frame, text=0, state= "disabled", bg = "#ef1a11", command = lambda x1=1, y1=5: self.move(self.action_button, x1, y1))
+        self.action_button[1][total_columns - 1] = tkinter.Button(self.frame, text=0, state= "disabled", font=houseFont, bg = "#ef1a11", command = lambda x1=1, y1=5: self.move(self.action_button, x1, y1))
         self.action_button[1][total_columns - 1].grid(row=1, column=total_columns - 1, sticky="ew")
 
         # creating buttons
@@ -54,8 +57,9 @@ class Table:
                 self.action_button[i][j].grid(row=i, column=j, sticky="ew")
         
         for j in range(1, total_columns-1):
-                self.action_button[0][j].config(bg='#d9534f', state= "disabled")
-                self.action_button[2][j].config(bg='#89cff0')
+                # disabledforeground="#191134"
+                self.action_button[0][j].config(bg='#d9534f', font=buttonFont, fg = "white", disabledforeground="#343333", state= "disabled")
+                self.action_button[2][j].config(bg='#89cff0', font=buttonFont, fg = "white", disabledforeground="#343333")
         # button for a new game
         new_game_button=tkinter.Button(root, text="New game", command=self.new_game)
         new_game_button.grid(row=5,column=0)
