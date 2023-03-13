@@ -124,12 +124,20 @@ class Table:
 
     def change_turn(self):
         total_columns = len(self.action_button[0])
-        self.is_end_match()
+        if self.is_end_match():
+            if (int(self.action_button[1][0]['text']) >  int(self.action_button[1][total_columns - 1]['text'])):
+                tkinter.messagebox.showinfo(title="Game over", message="Player 1 won!!")
+            elif (int(self.action_button[1][0]['text']) ==  int(self.action_button[1][total_columns - 1]['text'])):
+                tkinter.messagebox.showinfo(title="Game over", message="It's a draw!!")
+            else:
+                tkinter.messagebox.showinfo(title="Game over", message="Player 2 won!!")
+            self.new_game()
         # change turn
         if self.turn == 2:
             self.turn = 0
             for j in range(1, total_columns-1):
                 self.action_button[2][j].config(state= "disabled")
+
             if self.nr_players == 2:
                 for j in range(1, total_columns-1):
                     self.action_button[0][j].config(state= "normal")
@@ -174,14 +182,16 @@ class Table:
         # choose the number of players
         if option == "1":
             self.nr_players = 1
+            self.turn = 2
             for j in range(1, total_columns-1):
                 self.action_button[2][j].config(state= "normal")
                 self.action_button[0][j].config(state= "disabled")
             print ("Some code here...")
         else:
             self.nr_players = 2
+            self.turn = 0
             for j in range(1, total_columns-1):
-                self.action_button[2][j].config(state= "normal")
+                self.action_button[2][j].config(state= "disabled")
                 self.action_button[0][j].config(state= "normal")
             print ("Some code here...")
     
@@ -227,13 +237,6 @@ class Table:
             is_end_game = True
         else:
             is_end_game = False
-        
-        if is_end_game == True:
-            if (int(self.action_button[1][0]['text']) >  int(self.action_button[1][total_columns - 1]['text'])):
-                tkinter.messagebox.showinfo(title="Game over", message="Player 1 won!!")
-            elif (int(self.action_button[1][0]['text']) ==  int(self.action_button[1][total_columns - 1]['text'])):
-                tkinter.messagebox.showinfo(title="Game over", message="It's a draw!!")
-            else:
-                tkinter.messagebox.showinfo(title="Game over", message="Player 2 won!!")
-            self.new_game()
+
         return is_end_game
+    
