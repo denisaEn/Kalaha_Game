@@ -23,59 +23,66 @@ class MiniMax:
         search_matrix = matrix.copy()
 
         print("Ai score")
-        for i in range(1, len(matrix[0])):
+        for i in range(1, len(matrix[0]) - 1):
               search_matrix = matrix.copy()
               if (search_matrix[0][i] > 0) :
                   depth = 5
                   self.maxTurn = True
-                  ai_score = self.minimax(depth, self.maxTurn, search_matrix)
+                  ai_score = self.minimax(depth, self.maxTurn, search_matrix, i)
                   print (ai_score)
                   if ai_score > best_score:
                       best_score = ai_score
                       self.best_move  = i
 
        
-  def minimax (self, curDepth, maxTurn, board):
+  def minimax (self, curDepth, maxTurn, board, move):
       
       # base case : targetDepth reached
       if (curDepth == 0):
           return board[1][0]
       if (maxTurn):
           maxEval = float('-inf')
-          for i in range(1, len(board[0])):
-              if (board[0][i] > 0) :
+          result = self.move(board, 0, move, maxTurn)
+          newboard = np.zeros((len(board), len(board[0])))
+          newboard = result[0]
+          changingTurn = result[1]
+          for i in range(1, len(board[0]) - 1):
                 #print("Old board")
                 #print(i, curDepth, self.maxTurn )
                 #print (board)
-                result = self.move(board, 0, i, maxTurn)
-                newboard = result[0].copy()
-                changingTurn = result[1]
                 if changingTurn:
-                    maxTurn = not maxTurn
-                    eval = self.minimax(curDepth-1, maxTurn, newboard)
+                    if (newboard[2][i] > 0) :
+                        maxTurn = False
+                        eval = self.minimax(curDepth-1, maxTurn, newboard, i)
+                        maxEval = max(maxEval, eval)
                 else:
-                    #print (newboard)
-                    eval = newboard[1][0] - board[1][0] + self.minimax(curDepth, maxTurn, newboard)
-                maxEval = max(maxEval, eval)
+                    if (newboard[0][i] > 0) :
+                        maxTurn = True
+                        eval = newboard[1][0] - board[1][0] + self.minimax(curDepth, maxTurn, newboard, i)
+                        maxEval = max(maxEval, eval)
           return maxEval
       
       else:
           minEval = float('inf')
-          for i in range(1, len(board[0])):
-              if (board[2][i] > 0) :
+          result = self.move(board, 2, move, maxTurn)
+          newboard = np.zeros((len(board), len(board[0])))
+          newboard = result[0]
+          changingTurn = result[1]
+          for i in range(1, len(board[0])-1):
                 #print("Old board")
                 #print(i, curDepth,  self.maxTurn)
                 #print (board)
-                result = self.move(board, 2, i, maxTurn)
-                newboard = result[0].copy()
-                changingTurn = result[1]
                 if changingTurn:
-                    maxTurn = not maxTurn
-                    eval = self.minimax(curDepth - 1, maxTurn, newboard)
+                    if (newboard[0][i] > 0) :
+                        maxTurn = True
+                        eval = self.minimax(curDepth - 1, maxTurn, newboard, i)
+                        minEval = min(minEval, eval)
                 else:
+                    if (newboard[2][i] > 0) :
                     #print(newboard)
-                    eval = newboard[1][0] - board[1][0] + self.minimax(curDepth, maxTurn, newboard)
-                minEval = min(minEval, eval)
+                        maxTurn = False
+                        eval = newboard[1][0] - board[1][0] + self.minimax(curDepth, maxTurn, newboard, i)
+                        minEval = min(minEval, eval)
           return minEval
 
   def move(self, newboard, row, column, maxTurn):
