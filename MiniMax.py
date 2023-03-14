@@ -16,7 +16,6 @@ class MiniMax:
         for i in range(0, total_rows,2):
             for j in range(1, total_columns-1):
                 matrix[i][j] = int(board[i][j]['text'])
-
         search_matrix = [[0 for x in range(total_columns)] for x in range(total_rows)]
         best_score = float('-inf')
         self.best_move  = - 1
@@ -38,18 +37,16 @@ class MiniMax:
   def minimax (self, curDepth, maxTurn, board, move):
       
       # base case : targetDepth reached
-      if (curDepth == 0):
+      if (curDepth == 0 or self.is_end_game(board)):
           return board[1][0]
       if (maxTurn):
           maxEval = float('-inf')
           result = self.move(board, 0, move, maxTurn)
-          newboard = np.zeros((len(board), len(board[0])))
-          newboard = result[0]
-          changingTurn = result[1]
+          if (self.is_end_game(result[0])):
+              return board[1][0]
           for i in range(1, len(board[0]) - 1):
-                #print("Old board")
-                #print(i, curDepth, self.maxTurn )
-                #print (board)
+                newboard = result[0]
+                changingTurn = result[1]
                 if changingTurn:
                     if (newboard[2][i] > 0) :
                         maxTurn = False
@@ -65,13 +62,11 @@ class MiniMax:
       else:
           minEval = float('inf')
           result = self.move(board, 2, move, maxTurn)
-          newboard = np.zeros((len(board), len(board[0])))
-          newboard = result[0]
-          changingTurn = result[1]
+          if (self.is_end_game(result[0])):
+            return board[1][0]
           for i in range(1, len(board[0])-1):
-                #print("Old board")
-                #print(i, curDepth,  self.maxTurn)
-                #print (board)
+                newboard = result[0]
+                changingTurn = result[1]
                 if changingTurn:
                     if (newboard[0][i] > 0) :
                         maxTurn = True
@@ -79,7 +74,6 @@ class MiniMax:
                         minEval = min(minEval, eval)
                 else:
                     if (newboard[2][i] > 0) :
-                    #print(newboard)
                         maxTurn = False
                         eval = newboard[1][0] - board[1][0] + self.minimax(curDepth, maxTurn, newboard, i)
                         minEval = min(minEval, eval)
@@ -137,3 +131,15 @@ class MiniMax:
                               if stones == 0:
                                   changingTurn = False
               return board, changingTurn
+
+  def is_end_game(self, board):
+        total_columns = len(board[0])
+        stones0 = 0
+        stones2 = 0
+        for j in range(1, total_columns-1):
+            stones0 = stones0 + int(board[0][j])
+            stones2 = stones2 + int(board[2][j])
+        
+        if (stones0 == 0 or stones2 == 0):
+            return True
+        return False
