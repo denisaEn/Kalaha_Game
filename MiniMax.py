@@ -27,9 +27,10 @@ class MiniMax:
               if (search_matrix[0][i] > 0) :
                   depth = 5
                   self.maxTurn = True
+                  print (search_matrix)
                   ai_score = self.minimax(depth, self.maxTurn, search_matrix, i)
                   print (ai_score)
-                  if ai_score > best_score:
+                  if ai_score >= best_score:
                       best_score = ai_score
                       self.best_move  = i
 
@@ -38,7 +39,7 @@ class MiniMax:
       
       # base case : targetDepth reached
       if (curDepth == 0 or self.is_end_game(board)):
-          return board[1][0]
+          return board[1][0] - 0.5*board[1][len(board[0]) - 1] + 0.5*self.previousMove(move, board)
       if (maxTurn):
           maxEval = float('-inf')
           result = self.move(board, 0, move, maxTurn)
@@ -55,7 +56,7 @@ class MiniMax:
                 else:
                     if (newboard[0][i] > 0) :
                         maxTurn = True
-                        eval = newboard[1][0] - board[1][0] + self.minimax(curDepth, maxTurn, newboard, i)
+                        eval =  self.minimax(curDepth, maxTurn, newboard, i)
                         maxEval = max(maxEval, eval)
           return maxEval
       
@@ -75,9 +76,21 @@ class MiniMax:
                 else:
                     if (newboard[2][i] > 0) :
                         maxTurn = False
-                        eval = newboard[1][0] - board[1][0] + self.minimax(curDepth, maxTurn, newboard, i)
+                        eval =  self.minimax(curDepth, maxTurn, newboard, i)
                         minEval = min(minEval, eval)
           return minEval
+
+  def previousMove(self, move, board):
+      isRightMost = False
+      for i in range(1, len(board[0])-1):
+          if (board[0][i] > 0):
+            if (i == move):
+                isRightMost = True
+            break
+      if (isRightMost == False):
+        return 0
+      return 1       
+              
 
   def move(self, newboard, row, column, maxTurn):
           board = newboard.copy()

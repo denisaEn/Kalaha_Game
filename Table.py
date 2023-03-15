@@ -37,13 +37,13 @@ class Table:
         # house of the first player on the board
         self.e = Entry(self.frame, width=5, fg='blue', font=('Arial',16,'bold'))
         self.e.grid(row=1, column=0)
-        self.action_button[1][0] = tkinter.Button(self.frame, text=0, state= "disabled", bg = "#83a3ee", font=houseFont, command= lambda x1=1, y1=0: self.move(self.action_button, x1, y1))
+        self.action_button[1][0] = tkinter.Button(self.frame, text=0, state= "disabled", bg = "#ef1a11", font=houseFont, command= lambda x1=1, y1=0: self.move(self.action_button, x1, y1))
         self.action_button[1][0].grid(row=1, column=0, sticky="ew")
         
         # house of the second player on the board
         self.e = Entry(self.frame, width=5, fg='blue', font=('Arial',16,'bold'))
         self.e.grid(row=1, column=total_columns - 1)
-        self.action_button[1][total_columns - 1] = tkinter.Button(self.frame, text=0, state= "disabled", font=houseFont, bg = "#ef1a11", command = lambda x1=1, y1=5: self.move(self.action_button, x1, y1))
+        self.action_button[1][total_columns - 1] = tkinter.Button(self.frame, text=0, state= "disabled", font=houseFont, bg = "#83a3ee", command = lambda x1=1, y1=5: self.move(self.action_button, x1, y1))
         self.action_button[1][total_columns - 1].grid(row=1, column=total_columns - 1, sticky="ew")
 
         # creating buttons
