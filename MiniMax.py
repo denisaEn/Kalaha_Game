@@ -27,15 +27,16 @@ class MiniMax:
               if (search_matrix[0][i] > 0) :
                   depth = 5
                   self.maxTurn = True
-                  print (search_matrix)
-                  ai_score = self.minimax(depth, self.maxTurn, search_matrix, i)
+                  alfa = float('-inf')
+                  beta = float('inf')
+                  ai_score = self.minimax(depth, self.maxTurn, search_matrix, i, alfa, beta)
                   print (ai_score)
                   if ai_score >= best_score:
                       best_score = ai_score
                       self.best_move  = i
 
        
-  def minimax (self, curDepth, maxTurn, board, move):
+  def minimax (self, curDepth, maxTurn, board, move, alfa, beta):
       
       # base case : targetDepth reached
       if (curDepth == 0 or self.is_end_game(board)):
@@ -51,33 +52,46 @@ class MiniMax:
                 if changingTurn:
                     if (newboard[2][i] > 0) :
                         maxTurn = False
-                        eval = self.minimax(curDepth-1, maxTurn, newboard, i)
+                        eval = self.minimax(curDepth-1, maxTurn, newboard, i, alfa, beta)
                         maxEval = max(maxEval, eval)
+                        alfa = max(alfa, maxEval)
+                        if (beta <= alfa):
+                            break
                 else:
                     if (newboard[0][i] > 0) :
                         maxTurn = True
-                        eval =  self.minimax(curDepth, maxTurn, newboard, i)
+                        eval =  self.minimax(curDepth, maxTurn, newboard, i, alfa, beta)
                         maxEval = max(maxEval, eval)
+                        alfa = max(alfa, maxEval)
+                        if (beta <= alfa):
+                            break
           return maxEval
       
       else:
           minEval = float('inf')
           result = self.move(board, 2, move, maxTurn)
           if (self.is_end_game(result[0])):
-            return board[1][0]
+            return board[1][0] - 0.5*board[1][len(board[0]) - 1] + 0.5*self.previousMove(move, board)
           for i in range(1, len(board[0])-1):
                 newboard = result[0]
                 changingTurn = result[1]
                 if changingTurn:
                     if (newboard[0][i] > 0) :
                         maxTurn = True
-                        eval = self.minimax(curDepth - 1, maxTurn, newboard, i)
+                        eval = self.minimax(curDepth - 1, maxTurn, newboard, i, alfa, beta)
                         minEval = min(minEval, eval)
+                        beta = min(beta, minEval)
+                        if (beta <= alfa):
+                            break
                 else:
                     if (newboard[2][i] > 0) :
                         maxTurn = False
-                        eval =  self.minimax(curDepth, maxTurn, newboard, i)
+                        eval =  self.minimax(curDepth, maxTurn, newboard, i, alfa, beta)
                         minEval = min(minEval, eval)
+                        minEval = min(minEval, eval)
+                        beta = min(beta, minEval)
+                        if (beta <= alfa):
+                            break
           return minEval
 
   def previousMove(self, move, board):
