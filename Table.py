@@ -8,208 +8,212 @@ import tkinter.font as font
 
 class Table:
    
-   # column = [0, 1, 2, 3, 4, 5, 4, 3, 2, 1] 
-   # row =    [1, 2, 2, 2, 2, 1, 0, 0, 0, 0]
     def __init__(self,root):
         self.frame=Frame(root)
         self.frame.grid(row=1,column=1)
 
-        self.action_button = [[],[]]
+        # initialize parameters
+        self.buttons = [[],[]]
         self.nr_players = 1
+        # self.turn = 0 - player1, self.turn = 2 - player2
         self.turn = 2
-        self.number_of_Stones = 4
-        self.create_board(root, self.number_of_Stones)
+        self.nr_stones = 4
+        self.create_board(root, self.nr_stones)
 
-    def create_board(self, root, number_of_Stones):
-        # take the data
-        buttonFont = font.Font(size=15)
-        houseFont =  font.Font(size=30)
-        board = [(0, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, 0),
+    def create_board(self, root, nr_stones):
+        button_font = font.Font(size=15)
+        house_font  =  font.Font(size=30)
+        # create a board with 6 pits for each player
+        # row[0] - player1 pits, row[2]-player2 pits
+        board = [(0, nr_stones, nr_stones, nr_stones, nr_stones, nr_stones, nr_stones, 0),
                  (0, 0, 0, 0, 0, 0, 0, 0),
-                 (0, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, number_of_Stones, 0)]
-        # find total number of rows and
-        # columns in list
+                 (0, nr_stones, nr_stones, nr_stones, nr_stones, nr_stones, nr_stones, 0)]
+        
+        # find total number of rows and columns
         total_rows = len(board)
         total_columns = len(board[0])
 
-        self.action_button = [[0 for x in range(total_columns)] for x in range(total_rows)]
+        self.buttons = [[0 for x in range(total_columns)] for x in range(total_rows)]
         
-        # house of the first player on the board
-        self.e = Entry(self.frame, width=5, fg='blue', font=('Arial',16,'bold'))
-        self.e.grid(row=1, column=0)
-        self.action_button[1][0] = tkinter.Button(self.frame, text=0, state= "disabled", bg = "#ef1a11", font=houseFont, command= lambda x1=1, y1=0: self.move(self.action_button, x1, y1))
-        self.action_button[1][0].grid(row=1, column=0, sticky="ew")
+        # store of the first player on the board
+        self.buttons[1][0] = tkinter.Button(self.frame, text=0, state= "disabled", bg = "#ef1a11", font=house_font, command= lambda row=1, column=0: self.move(self.buttons, row, column))
+        self.buttons[1][0].grid(row=1, column=0, sticky="ew")
         
-        # house of the second player on the board
-        self.e = Entry(self.frame, width=5, fg='blue', font=('Arial',16,'bold'))
-        self.e.grid(row=1, column=total_columns - 1)
-        self.action_button[1][total_columns - 1] = tkinter.Button(self.frame, text=0, state= "disabled", font=houseFont, bg = "#83a3ee", command = lambda x1=1, y1=5: self.move(self.action_button, x1, y1))
-        self.action_button[1][total_columns - 1].grid(row=1, column=total_columns - 1, sticky="ew")
+        # store of the second player on the board
+        self.buttons[1][total_columns - 1] = tkinter.Button(self.frame, text=0, state= "disabled", font=house_font, bg = "#83a3ee", command = lambda row=1, column=total_columns-1: self.move(self.buttons, row, column))
+        self.buttons[1][total_columns - 1].grid(row=1, column=total_columns - 1, sticky="ew")
 
         # creating buttons
         for i in range(0, total_rows,2):
             for j in range(1, total_columns-1):
-                self.e = Entry(self.frame, width=5, fg='blue',
-                               font=('Arial',16,'bold'))
+                self.e = Entry(self.frame, width=5, fg='blue', font=('Arial',16,'bold'))
                 self.e.grid(row=i, column=j)
                 self.e.insert(END, board[i][j])
-                self.action_button[i][j] = tkinter.Button(self.frame, text=board[i][j], command = lambda x1=i, y1=j: self.move(self.action_button, x1, y1))
-                self.action_button[i][j].grid(row=i, column=j, sticky="ew")
+                self.buttons[i][j] = tkinter.Button(self.frame, text=board[i][j], command = lambda row=i, column=j: self.move(self.buttons, row, column))
+                self.buttons[i][j].grid(row=i, column=j, sticky="ew")
         
         for j in range(1, total_columns-1):
-                # disabledforeground="#191134"
-                self.action_button[0][j].config(bg='#d9534f', font=buttonFont, fg = "white", disabledforeground="#343333", state= "disabled")
-                self.action_button[2][j].config(bg='#89cff0', font=buttonFont, fg = "white", disabledforeground="#343333")
+                self.buttons[0][j].config(bg='#d9534f', font=button_font, fg = "white", disabledforeground="#343333", state= "disabled")
+                self.buttons[2][j].config(bg='#89cff0', font=button_font, fg = "white", disabledforeground="#343333")
         # button for a new game
         new_game_button=tkinter.Button(root, text="New game", command=self.new_game)
-        new_game_button.grid(row=5,column=0)
+        new_game_button.grid(row=5, column=0)
     
     def move(self, board, row, column):
-        # find total number of columns in list
         total_columns = len(board[0])
-        # get the stones number of current pit
+        # get the nr_stones of current pit
         stones = int(board[row][column]['text'])
         if (stones != 0):
             board[row][column].config(text=0)
-            changingTurn = True
+            changing_turn = True
             # split the stones to the next pits (anti-clockwise)
             while (stones > 0):
+                # north side player
                 if row == 0:
                     while (column > 1 and stones > 0):
                         column = column - 1
-                        newStones = int(board[row][column]['text']) + 1
+                        new_stones = int(board[row][column]['text']) + 1
                         stones = stones - 1
-                        if stones == 0 and self.turn == 0 and newStones == 1 and int(board[2][column]['text']) != 0:
+
+                        # steal the stones from the south position if the first player ends up in a empty pit
+                        if stones == 0 and self.turn == 0 and new_stones == 1 and int(board[2][column]['text']) != 0:
                             board[row][column].config(text=0)
-                            totalStones = int(board[1][0]['text']) + int(board[2][column]['text']) + 1
-                            board[1][0].config(text=totalStones)
+                            total_stones = int(board[1][0]['text']) + int(board[2][column]['text']) + 1
+                            board[1][0].config(text=total_stones)
                             board[2][column].config(text=0)
                         else:
-                            board[row][column].config(text=newStones)
+                            board[row][column].config(text=new_stones)
 
+                    # move to south side
                     if (column == 1  and stones > 0):
                         row = 2
                         column = 0 
+
+                        # deposit one stone in your store if it is first player turn
                         if (self.turn == 0):
                             stones = stones - 1
                             board[1][0].config(text=int(board[1][0]['text']) + 1)
                             if stones == 0 and self.is_end_match() == False:
-                                changingTurn = False
+                                changing_turn = False
+
+                # south side player
                 else:
                     while (column < total_columns - 2 and stones > 0):
                         column = column + 1
-                        newStones = int(board[row][column]['text']) + 1
+                        new_stones = int(board[row][column]['text']) + 1
                         stones = stones - 1
-                        if stones == 0 and self.turn == 2 and newStones == 1 and int(board[0][column]['text']) != 0:
+
+                        # steal the stones from the north position if the second player ends up in a empty pit
+                        if stones == 0 and self.turn == 2 and new_stones == 1 and int(board[0][column]['text']) != 0:
                             board[row][column].config(text=0)
-                            totalStones = int(board[1][total_columns - 1]['text']) + int(board[0][column]['text']) + 1
-                            board[1][total_columns - 1].config(text=totalStones)
+                            total_stones = int(board[1][total_columns - 1]['text']) + int(board[0][column]['text']) + 1
+                            board[1][total_columns - 1].config(text=total_stones)
                             board[0][column].config(text=0)
                         else:
-                            board[row][column].config(text=newStones)
-                    
+                            board[row][column].config(text=new_stones)
+
+                    # move to north side
                     if (column == total_columns - 2 and stones > 0):
                         row = 0
                         column = total_columns - 1
+
+                        # deposit one stone in your store if it is second player turn
                         if self.turn == 2:
                             stones = stones - 1
                             board[1][total_columns - 1].config(text=int(board[1][total_columns - 1]['text']) + 1)
                             if stones == 0 and self.is_end_match() == False:
-                                changingTurn = False
+                                changing_turn = False
 
-            if (changingTurn == True):
+            if (changing_turn == True):
                 self.change_turn()
-            return changingTurn
+            return changing_turn
             
 
     def change_turn(self):
-        total_columns = len(self.action_button[0])
+        total_columns = len(self.buttons[0])
         if self.is_end_match():
-            if (int(self.action_button[1][0]['text']) >  int(self.action_button[1][total_columns - 1]['text'])):
+            if (int(self.buttons[1][0]['text']) >  int(self.buttons[1][total_columns - 1]['text'])):
                 tkinter.messagebox.showinfo(title="Game over", message="Player 1 won!!")
-            elif (int(self.action_button[1][0]['text']) ==  int(self.action_button[1][total_columns - 1]['text'])):
+            elif (int(self.buttons[1][0]['text']) ==  int(self.buttons[1][total_columns - 1]['text'])):
                 tkinter.messagebox.showinfo(title="Game over", message="It's a draw!!")
             else:
                 tkinter.messagebox.showinfo(title="Game over", message="Player 2 won!!")
             self.new_game()
+            return 
         # change turn
         if self.turn == 2:
             self.turn = 0
             for j in range(1, total_columns-1):
-                self.action_button[2][j].config(state= "disabled")
+                self.buttons[2][j].config(state= "disabled")
 
             if self.nr_players == 2:
                 for j in range(1, total_columns-1):
-                    self.action_button[0][j].config(state= "normal")
+                    self.buttons[0][j].config(state= "normal")
             else:
                 # AI player
                 print ("AI algorithm searches for the best move")
-                # best_move is the index of the first row between 1 and 6
-                #best_move = MiniMax(self.action_button).best_move
-                print("Best move from MiniMax:")
 
-                # self.move(self.action_button, 0, best_move)
                 while True and self.is_end_match() == False:
-                    #while True:
-                    #    best_move = random.randint(1,6)
-                    #    if int(self.action_button[0][best_move]['text']) != 0:
-                    #        break
-                    best_move = MiniMax(self.action_button).best_move
+                    # best_move is the index of the first row between 1 and 6
+                    best_move = MiniMax(self.buttons).best_move
+                    print("Best move from MiniMax:")
                     print(best_move)
-                    changingTurn = self.move(self.action_button, 0, best_move)
-                    if changingTurn == True:
+
+                    changing_turn = self.move(self.buttons, 0, best_move)
+                    if changing_turn == True:
                         self.turn = 2
                         break
-                print("Sleep")
+
         elif self.turn == 0:
             self.turn = 2
             for j in range(1, total_columns-1):
-                self.action_button[2][j].config(state= "normal")
-                self.action_button[0][j].config(state= "disabled")
+                self.buttons[2][j].config(state= "normal")
+                self.buttons[0][j].config(state= "disabled")
 
     def choice(self, option):
-        total_rows = len(self.action_button)
-        total_columns = len(self.action_button[0])
+        total_rows = len(self.buttons)
+        total_columns = len(self.buttons[0])
         pop.destroy()
-        # reinitiliaze the board with the default values
+        
+        # reinitiliaze the board with default values
         for i in range(0, total_rows,2):
             for j in range(1, total_columns-1):
-                self.action_button[i][j].config(text=4)
+                self.buttons[i][j].config(text=self.nr_stones)
 
-        self.action_button[1][0].config(text=0) 
-        self.action_button[1][total_columns - 1].config(text=0)
+        self.buttons[1][0].config(text=0) 
+        self.buttons[1][total_columns - 1].config(text=0)
 
         # choose the number of players
         if option == "1":
             self.nr_players = 1
             self.turn = 2
             for j in range(1, total_columns-1):
-                self.action_button[2][j].config(state= "normal")
-                self.action_button[0][j].config(state= "disabled")
-            print ("Some code here...")
+                self.buttons[2][j].config(state= "normal")
+                self.buttons[0][j].config(state= "disabled")
         else:
             self.nr_players = 2
             self.turn = 0
             for j in range(1, total_columns-1):
-                self.action_button[2][j].config(state= "disabled")
-                self.action_button[0][j].config(state= "normal")
-            print ("Some code here...")
+                self.buttons[2][j].config(state= "disabled")
+                self.buttons[0][j].config(state= "normal")
     
     def new_game(self):
-        msg_box = tkinter.messagebox.askquestion('New game', 'Do you want to start a new game?',
-                                        icon='question')
+        msg_box = tkinter.messagebox.askquestion('New game', 'Do you want to start a new game?', icon='question')
         if msg_box == 'yes':
             global pop
             pop = Toplevel(self.frame)
             pop.title("Number of players")
             pop.geometry("300x150")
             pop.config(bg="white")
+
             # Create a Label Text
             label = Label(pop, text="Choose the number of player:")
             label.pack(pady=20)
+
             # Add a Frame
             frame = Frame(pop)
             frame.pack(pady=10)
+
             # Add Button for making selection
             button1 = Button(frame, text="1 player", command=lambda: self.choice("1"))
             button1.grid(row=0, column=1)
@@ -217,23 +221,25 @@ class Table:
             button2.grid(row=0, column=2)
 
     def is_end_match(self):
-        total_columns = len(self.action_button[0])
+        total_columns = len(self.buttons[0])
         is_end_game = False
         stones0 = 0
         stones2 = 0
         for j in range(1, total_columns-1):
-            stones0 = stones0 + int(self.action_button[0][j]['text'])
-            stones2 = stones2 + int(self.action_button[2][j]['text'])
+            stones0 = stones0 + int(self.buttons[0][j]['text'])
+            stones2 = stones2 + int(self.buttons[2][j]['text'])
         
+        # Move all stones into store when all opponent pits are empty
         if (stones0 == 0):
-            self.action_button[1][total_columns - 1].config(text = (int(self.action_button[1][total_columns - 1]['text']) + stones2))
+            self.buttons[1][total_columns - 1].config(text = (int(self.buttons[1][total_columns - 1]['text']) + stones2))
             for j in range(1, total_columns-1):
-                self.action_button[2][j].config(text=0)
+                self.buttons[2][j].config(text=0)
             is_end_game = True
+
         elif (stones2 == 0):
-            self.action_button[1][0].config(text = (int(self.action_button[1][0]['text']) + stones0))
+            self.buttons[1][0].config(text = (int(self.buttons[1][0]['text']) + stones0))
             for j in range(1, total_columns-1):
-                self.action_button[0][j].config(text=0)
+                self.buttons[0][j].config(text=0)
             is_end_game = True
         else:
             is_end_game = False
