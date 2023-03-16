@@ -44,7 +44,7 @@ class MiniMax:
       
       # base case : targetDepth reached
       if (cur_depth == 0 or self.is_end_game(board)):
-          return self.evaluate(board, move)
+          return self.evaluate(board, move, max_turn)
       
       if (max_turn):
           max_eval = float('-inf')
@@ -52,7 +52,7 @@ class MiniMax:
           new_board = result[0]
           # after each move, check if the game ended
           if (self.is_end_game(result[0])):
-              return self.evaluate(new_board, move)
+              return self.evaluate(new_board, move, max_turn)
           
           for i in range(1, len(board[0]) - 1):
                 # get the new board and the turn after the movement
@@ -88,7 +88,7 @@ class MiniMax:
           new_board = result[0]
           # after each move, check if the game ended
           if (self.is_end_game(result[0])):
-            return self.evaluate(new_board, move)
+            return self.evaluate(new_board, move, max_turn)
           
           for i in range(1, len(board[0])-1):
                 # update the board and the turn after each movement
@@ -118,33 +118,32 @@ class MiniMax:
                             break
           return min_eval
       
-  def evaluate(self, board, move):
+  def evaluate(self, board, move, turn):
       # number of stones of AI store
       store_AI = board[1][0]
       # number of stones of player store
-      store_player = 0.5 * board[1][len(board[0]) - 1]
-      # check if the last move was the right most move
-      right_most_move = 0.5 * self.rightMost(move, board)
-      
-      return store_AI - store_player + right_most_move
+      store_player = board[1][len(board[0]) - 1]
+      # number of moves available
+      moves_avaialable = self.get_moves_available(board)
+      # number of stones in pits
+      stones = sum(board[0])
 
-  def rightMost(self, move, board):
-      is_right_most = False
+      return 0.6*store_AI - 0.5* store_player + 0.2*moves_avaialable + 0.2*stones
+
+  def get_moves_available(self, board):
+      moves = 0
       for i in range(1, len(board[0])-1):
-          if (board[0][i] > 0):
-            if (i == move):
-                is_right_most = True
-            break
-      if (is_right_most == False):
-        return 0
-      return 1       
+        if (board[0][i] > 0):
+            moves = moves + 1
+
+      return moves     
               
 
   def move(self, new_board, row, column, max_turn):
           board = new_board.copy()
           # find total number of columns in list
           total_columns = len(board[0])
-          # get the stones number of current pit
+          # get the number of stones in the current pit
           stones = board[row][column]
           if (stones != 0):
               board[row][column] = 0
