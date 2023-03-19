@@ -1,9 +1,7 @@
-
-import math
 import numpy as np
 
 class MiniMax:
-  def __init__(self, board):
+  def __init__(self, board, difficulty):
 
         total_rows = len(board)
         total_columns = len(board[0])
@@ -31,7 +29,7 @@ class MiniMax:
                   beta = float('inf')
                   
                   # compute the AI score based on the minimax algorithm
-                  ai_score = self.minimax(depth, max_turn, search_matrix, i, alfa, beta)
+                  ai_score = self.minimax(depth, max_turn, search_matrix, i, alfa, beta, difficulty)
                   print (ai_score)
                  
                   # choose the best move based on the based score
@@ -40,11 +38,11 @@ class MiniMax:
                       self.best_move  = i
 
        
-  def minimax (self, cur_depth, max_turn, board, move, alfa, beta):
+  def minimax (self, cur_depth, max_turn, board, move, alfa, beta, difficulty):
       
       # base case : targetDepth reached
       if (cur_depth == 0 or self.is_end_game(board)):
-          return self.evaluate(board, move, max_turn)
+          return self.evaluate(board, difficulty)
       
       if (max_turn):
           max_eval = float('-inf')
@@ -52,7 +50,7 @@ class MiniMax:
           new_board = result[0]
           # after each move, check if the game ended
           if (self.is_end_game(result[0])):
-              return self.evaluate(new_board, move, max_turn)
+              return self.evaluate(new_board, difficulty)
           
           for i in range(1, len(board[0]) - 1):
                 # get the new board and the turn after the movement
@@ -65,7 +63,7 @@ class MiniMax:
                     if (new_board[2][i] > 0) :
                         # change turn
                         max_turn = False
-                        eval = self.minimax(cur_depth-1, max_turn, new_board, i, alfa, beta)
+                        eval = self.minimax(cur_depth-1, max_turn, new_board, i, alfa, beta, difficulty)
                         max_eval = max(max_eval, eval)
                         alfa = max(alfa, max_eval)
                         if (beta <= alfa):
@@ -75,7 +73,7 @@ class MiniMax:
                         # do not change turn
                         max_turn = True
                         # apply minimax algorithm with the same depth (one more move for the same player)
-                        eval =  self.minimax(cur_depth, max_turn, new_board, i, alfa, beta)
+                        eval =  self.minimax(cur_depth, max_turn, new_board, i, alfa, beta, difficulty)
                         max_eval = max(max_eval, eval)
                         alfa = max(alfa, max_eval)
                         if (beta <= alfa):
@@ -88,7 +86,7 @@ class MiniMax:
           new_board = result[0]
           # after each move, check if the game ended
           if (self.is_end_game(result[0])):
-            return self.evaluate(new_board, move, max_turn)
+            return self.evaluate(new_board, difficulty)
           
           for i in range(1, len(board[0])-1):
                 # update the board and the turn after each movement
@@ -101,7 +99,7 @@ class MiniMax:
                     if (new_board[0][i] > 0) :
                         # change turn
                         max_turn = True
-                        eval = self.minimax(cur_depth - 1, max_turn, new_board, i, alfa, beta)
+                        eval = self.minimax(cur_depth - 1, max_turn, new_board, i, alfa, beta, difficulty)
                         min_eval = min(min_eval, eval)
                         beta = min(beta, min_eval)
                         if (beta <= alfa):
@@ -111,14 +109,14 @@ class MiniMax:
                         # do not change turn
                         max_turn = False
                         # apply minimax algorithm with the same depth (one more move for the same player)
-                        eval =  self.minimax(cur_depth, max_turn, new_board, i, alfa, beta)
+                        eval =  self.minimax(cur_depth, max_turn, new_board, i, alfa, beta, difficulty)
                         min_eval = min(min_eval, eval)
                         beta = min(beta, min_eval)
                         if (beta <= alfa):
                             break
           return min_eval
       
-  def evaluate(self, board, move, turn):
+  def evaluate(self, board, difficulty):
       # number of stones of AI store
       store_AI = board[1][0]
       # number of stones of player store
@@ -127,8 +125,10 @@ class MiniMax:
       moves_avaialable = self.get_moves_available(board)
       # number of stones in pits
       stones = sum(board[0])
-
-      return 0.6*store_AI - 0.5* store_player + 0.2*moves_avaialable + 0.2*stones
+      if (difficulty == 'Easy'):
+        return 0.6*store_AI - 0.5*store_player
+      else:
+        return 0.6*store_AI - 0.5* store_player + 0.2*moves_avaialable + 0.2*stones
 
   def get_moves_available(self, board):
       moves = 0

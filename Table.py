@@ -1,9 +1,7 @@
 from tkinter import *
-import time
-import random
 import tkinter
-from tkinter import messagebox
 from MiniMax import *
+from tkinter import messagebox
 import tkinter.font as font
 
 class Table:
@@ -18,6 +16,7 @@ class Table:
         # self.turn = 0 - player1, self.turn = 2 - player2
         self.turn = 2
         self.nr_stones = 4
+        self.difficulty = "Hard"
         self.create_board(root, self.nr_stones)
 
     def create_board(self, root, nr_stones):
@@ -56,8 +55,17 @@ class Table:
                 self.buttons[0][j].config(bg='#d9534f', font=button_font, fg = "white", disabledforeground="#343333", state= "disabled")
                 self.buttons[2][j].config(bg='#89cff0', font=button_font, fg = "white", disabledforeground="#343333")
         # button for a new game
-        new_game_button=tkinter.Button(root, text="New game", command=self.new_game)
+        new_game_button=tkinter.Button(self.frame, text="New game", command=self.new_game)
         new_game_button.grid(row=5, column=0)
+
+        # this will create a label widget
+        l1 = Label(self.frame, text = "Number players: " + str(self.nr_players))
+        l2 = Label(self.frame, text = "Difficulty: " + self.difficulty)
+        
+        # grid method to arrange labels in respective
+        # rows and columns as specified
+        l1.grid(row = 6, column = 0, sticky = W, pady = 2)
+        l2.grid(row = 7, column = 0, sticky = W, pady = 2)
     
     def move(self, board, row, column):
         total_columns = len(board[0])
@@ -155,7 +163,7 @@ class Table:
 
                 while True and self.is_end_match() == False:
                     # best_move is the index of the first row between 1 and 6
-                    best_move = MiniMax(self.buttons).best_move
+                    best_move = MiniMax(self.buttons, self.difficulty).best_move
                     print("Best move from MiniMax:")
                     print(best_move)
 
@@ -170,7 +178,7 @@ class Table:
                 self.buttons[2][j].config(state= "normal")
                 self.buttons[0][j].config(state= "disabled")
 
-    def choice(self, option):
+    def choose_players(self, option):
         total_rows = len(self.buttons)
         total_columns = len(self.buttons[0])
         pop.destroy()
@@ -190,13 +198,53 @@ class Table:
             for j in range(1, total_columns-1):
                 self.buttons[2][j].config(state= "normal")
                 self.buttons[0][j].config(state= "disabled")
+            self.choose_difficulty()
         else:
             self.nr_players = 2
             self.turn = 0
             for j in range(1, total_columns-1):
                 self.buttons[2][j].config(state= "disabled")
                 self.buttons[0][j].config(state= "normal")
-    
+            self.difficulty = "-    "
+            l2 = Label(self.frame, text = "Difficulty: " + self.difficulty)
+            l2.grid(row = 7, column = 0, sticky = W, pady = 2)
+        
+        # this will create a label widget
+        l1 = Label(self.frame, text = "Number players: " + str(self.nr_players))
+        
+        
+        # grid method to arrange labels in respective
+        # rows and columns as specified
+        l1.grid(row = 6, column = 0, sticky = W, pady = 2)
+
+    def set_difficulty(self, difficulty):
+        self.difficulty = difficulty
+        
+        l2 = Label(self.frame, text = "Difficulty: " + self.difficulty)
+        l2.grid(row = 7, column = 0, sticky = W, pady = 2)
+        pop.destroy()
+
+    def choose_difficulty(self):
+        global pop
+        pop = Toplevel(self.frame)
+        pop.title("Difficulty")
+        pop.geometry("300x150")
+        pop.config(bg="white")
+        
+        # Create a Label Text
+        label = Label(pop, text="Choose difficulty: ")
+        label.pack(pady=20)
+        
+        # Add a Frame
+        frame = Frame(pop)
+        frame.pack(pady=10)
+
+        # Add Button for making selection
+        button1 = Button(frame, text="Easy", command=lambda: self.set_difficulty("Easy"))
+        button1.grid(row=0, column=1)
+        button2 = Button(frame, text="Hard", command=lambda: self.set_difficulty("Hard"))
+        button2.grid(row=0, column=2)
+        
     def new_game(self):
         msg_box = tkinter.messagebox.askquestion('New game', 'Do you want to start a new game?', icon='question')
         if msg_box == 'yes':
@@ -215,9 +263,9 @@ class Table:
             frame.pack(pady=10)
 
             # Add Button for making selection
-            button1 = Button(frame, text="1 player", command=lambda: self.choice("1"))
+            button1 = Button(frame, text="1 player", command=lambda: self.choose_players("1"))
             button1.grid(row=0, column=1)
-            button2 = Button(frame, text="2 players", command=lambda: self.choice("2"))
+            button2 = Button(frame, text="2 players", command=lambda: self.choose_players("2"))
             button2.grid(row=0, column=2)
 
     def is_end_match(self):
